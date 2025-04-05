@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import RateLimiter from 'rateLimiter.js'
+import RateLimiter from './rateLimiter.js'
 
 dotenv.config();
 
