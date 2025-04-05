@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowRight, Trophy, BarChart3, Users, Video, Mic, Brain, Sparkles, CheckCircle } from "lucide-react"
-import '@/styles/globals.css';
+
 
 export default function Home() {
   return (
@@ -702,3 +702,4 @@ export default function Home() {
     </div>
   );
 }
+
