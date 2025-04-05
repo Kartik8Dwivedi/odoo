@@ -6,6 +6,7 @@ router.get("/", (req, res) => {
   res.send(`<h1>Hello from the microservice!</h1>`);
 });
 
-router.get("/subject");
+router.post("/subject", );
+router.post("")
 
 export default router;
