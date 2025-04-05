@@ -7,17 +7,11 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[80vh] flex items-center">
-        <div className="absolute inset-0 z-0">
-          <div className="h-full w-full bg-gradient-to-r from-indigo-900 to-purple-900 dark:from-indigo-950 dark:to-purple-950">
-            <div className="absolute inset-0 bg-black/40" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 z-10 text-white">
-          <div className="max-w-3xl">
+      <section className="relative z-10 pt-20">
+        <div className="container mx-auto px-4 text-black">
+          <div className="max-w-3xl pl-5">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              Learn by Teaching AI
+              <span className="text-indigo-600">Ascend AI</span>: Learn by Teaching AI
             </h1>
             <p className="text-xl md:text-2xl mb-8">
               An AI-powered virtual classroom that personalizes learning, boosts
@@ -26,7 +20,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                className="px-6 py-4 text-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
               >
                 Start Learning
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -34,7 +28,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-white bg-[#1f3aa5b1] border-white hover:bg-white hover:text-black"
+                className="px-6 py-4 text-lg text-black bg-[#e0e7ff] border-black hover:bg-black hover:text-white"
               >
                 Watch Demo
                 <Video className="ml-2 h-5 w-5" />
@@ -200,7 +194,7 @@ export default function Home() {
       </section>
 
       {/* Comparison Section */}
-      <section className="py-20 bg-white dark:bg-gray-950">
+      {/* <section className="py-20 bg-white dark:bg-gray-950">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Bridging the Education Gap
@@ -434,7 +428,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Technology Section */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
