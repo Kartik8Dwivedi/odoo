@@ -1,4 +1,4 @@
-# AscentAI
+# AscendAI
 ### 🎓 AI-Based Personalized Learning Platform
 
 An intelligent learning system that adapts to each student's pace and learning style using AI. This project combines personalized teaching and evaluation to ensure step-by-step progress tracking and continuous improvement.
