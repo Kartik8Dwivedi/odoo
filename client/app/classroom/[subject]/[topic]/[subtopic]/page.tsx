@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
@@ -34,6 +32,31 @@ export default function ClassroomPage() {
   const { subject, topic, subtopic } = params;
   const { toast } = useToast();
 
+  const script = "";
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetch(
+        'http://localhost:3005/api/v1/stream',
+        // the payload must contain 3 parameters as body content: topic, grade & level
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            topic: topic+" -> "+subtopic+" -> "+script,
+            grade: "10",
+            level: "beginner",
+          }),
+        }
+      )
+
+      
+    }
+    fetchData();
+  }, [])
+  
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -45,6 +68,8 @@ export default function ClassroomPage() {
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
   const [mentorRating, setMentorRating] = useState(0);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [buffering, setBuffering] = useState(false);
 
   // Model B assessment availability
   const [isModelBAvailable, setIsModelBAvailable] = useState(false);
@@ -121,16 +146,46 @@ export default function ClassroomPage() {
       setDuration(video.duration);
     };
 
+    const handleWaiting = () => {
+      setBuffering(true);
+    };
+
+    const handlePlaying = () => {
+      setBuffering(false);
+    };
+
     video.addEventListener("timeupdate", updateTime);
     video.addEventListener("ended", handleVideoEnd);
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    video.addEventListener("waiting", handleWaiting);
+    video.addEventListener("playing", handlePlaying);
+    video.addEventListener("canplay", () => setVideoLoaded(true));
+    video.addEventListener("error", () => {
+      toast({
+        title: "Video Error",
+        description: "Failed to load video",
+        variant: "destructive",
+      });
+      setVideoLoaded(true);
+    });
 
     return () => {
       video.removeEventListener("timeupdate", updateTime);
       video.removeEventListener("ended", handleVideoEnd);
       video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      video.removeEventListener("waiting", handleWaiting);
+      video.removeEventListener("playing", handlePlaying);
+      video.removeEventListener("canplay", () => setVideoLoaded(true));
+      video.removeEventListener("error", () => {
+        toast({
+          title: "Video Error",
+          description: "Failed to load video",
+          variant: "destructive",
+        });
+        setVideoLoaded(true);
+      });
     };
-  }, [lecturesRemaining]);
+  }, [lecturesRemaining, toast]);
 
   const togglePlayPause = () => {
     const video = videoRef.current;
@@ -139,7 +194,13 @@ export default function ClassroomPage() {
     if (isPlaying) {
       video.pause();
     } else {
-      video.play();
+      video.play().catch((error) => {
+        toast({
+          title: "Playback Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      });
     }
     setIsPlaying(!isPlaying);
   };
@@ -246,18 +307,32 @@ export default function ClassroomPage() {
 
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="lg:w-3/4 space-y-6">
-              <div className="relative rounded-xl overflow-hidden bg-black">
+              <div className="relative rounded-xl overflow-hidden bg-black aspect-video">
+                {/* Loading state */}
+                {(!videoLoaded || buffering) && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                    <div className="animate-pulse flex flex-col items-center">
+                      <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                      <p className="text-white">Loading video...</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Video element */}
                 <video
                   ref={videoRef}
-                  className="w-full h-auto"
-                  poster="/placeholder.svg?height=480&width=640"
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
+                  className="w-full h-full object-contain"
+                  controls={false}
+                  preload="metadata"
                 >
-                  <source src="/placeholder.mp4" type="video/mp4" />
+                  <source
+                    src={`http://localhost:3005/api/v1/stream`}
+                    type="video/mp4"
+                  />
                   Your browser does not support the video tag.
                 </video>
 
+                {/* Video ended overlay */}
                 {videoEnded && (
                   <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white">
                     <h3 className="text-2xl font-bold mb-4">
@@ -281,6 +356,7 @@ export default function ClassroomPage() {
                   </div>
                 )}
 
+                {/* Custom video controls */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-3">
                   <div className="flex flex-col space-y-2">
                     <div className="flex items-center justify-between">

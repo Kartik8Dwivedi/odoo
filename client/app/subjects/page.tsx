@@ -1,7 +1,18 @@
-import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChevronRight, BookOpen, FlaskRoundIcon as Flask, Calculator } from "lucide-react"
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ChevronRight,
+  BookOpen,
+  FlaskRoundIcon as Flask,
+  Calculator,
+} from "lucide-react";
 
 export default function SubjectsPage() {
   return (
@@ -9,7 +20,8 @@ export default function SubjectsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Explore Subjects</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Browse through various subjects and topics to start your learning journey
+          Browse through various subjects and topics to start your learning
+          journey
         </p>
       </div>
 
@@ -32,8 +44,10 @@ export default function SubjectsPage() {
         <TabsContent value="physics" className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>Ray Optics</CardTitle>
-              <CardDescription>The study of light propagation in terms of rays</CardDescription>
+              <CardTitle>Electrostatics</CardTitle>
+              <CardDescription>
+                The study of static chargers and electric fields
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -50,25 +64,25 @@ export default function SubjectsPage() {
                   <ul className="space-y-2">
                     <li>
                       <Link
-                        href="/classroom/physics/ray-optics/reflection-laws"
+                        href="/classroom/physics/electrostatics/coulombs-law"
                         className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
                       >
-                        <span>Laws of Reflection</span>
+                        <span>coulombs-law</span>
                         <ChevronRight className="h-4 w-4" />
                       </Link>
                     </li>
                     <li>
                       <Link
-                        href="/classroom/physics/ray-optics/refraction"
+                        href="/classroom/physics/electrostatics/coulombs-law"
                         className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
                       >
-                        <span>Refraction of Light</span>
+                        <span>Amepere Circuital Law</span>
                         <ChevronRight className="h-4 w-4" />
                       </Link>
                     </li>
                     <li>
                       <Link
-                        href="/classroom/physics/ray-optics/lenses"
+                        href="/classroom/physics/electrostatics/coulombs-law"
                         className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
                       >
                         <span>Lenses and Optical Instruments</span>
@@ -84,7 +98,9 @@ export default function SubjectsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Waves</CardTitle>
-              <CardDescription>Oscillations and wave phenomena in nature</CardDescription>
+              <CardDescription>
+                Oscillations and wave phenomena in nature
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -137,7 +153,9 @@ export default function SubjectsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Organic Chemistry</CardTitle>
-              <CardDescription>The study of carbon-containing compounds</CardDescription>
+              <CardDescription>
+                The study of carbon-containing compounds
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -188,7 +206,9 @@ export default function SubjectsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Inorganic Chemistry</CardTitle>
-              <CardDescription>Chemistry of non-carbon compounds and elements</CardDescription>
+              <CardDescription>
+                Chemistry of non-carbon compounds and elements
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -241,7 +261,10 @@ export default function SubjectsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Algebra</CardTitle>
-              <CardDescription>The study of mathematical symbols and rules for manipulating them</CardDescription>
+              <CardDescription>
+                The study of mathematical symbols and rules for manipulating
+                them
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -292,7 +315,9 @@ export default function SubjectsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Trigonometry</CardTitle>
-              <CardDescription>The study of relationships between angles and sides of triangles</CardDescription>
+              <CardDescription>
+                The study of relationships between angles and sides of triangles
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -343,7 +368,9 @@ export default function SubjectsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Calculus</CardTitle>
-              <CardDescription>The study of continuous change and motion</CardDescription>
+              <CardDescription>
+                The study of continuous change and motion
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -394,6 +421,5 @@ export default function SubjectsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

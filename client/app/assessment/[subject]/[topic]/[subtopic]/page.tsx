@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 
 import type React from "react";
@@ -32,10 +33,23 @@ import {
   Pause,
   PhoneOff,
   Gamepad2,
+  Lightbulb,
+  BookOpen,
+  Sparkles,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth-context";
+import {
+  fetchStudentData,
+  submitAssessment,
+  analyzeTeaching,
+  type AssessmentResult,
+} from "@/services/api";
+
 
 type Question = {
   id: string;
@@ -59,6 +73,8 @@ export default function AssessmentPage() {
   const router = useRouter();
   const params = useParams();
   const { subject, topic, subtopic } = params;
+  const { toast } = useToast();
+  const { user } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
   const studentVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -68,7 +84,7 @@ export default function AssessmentPage() {
 
   // Assessment state
   const [assessmentPhase, setAssessmentPhase] = useState<
-    "face-to-face" | "questions" | "results" | "games"
+    "face-to-face" | "teaching" | "questions" | "results" | "games"
   >("face-to-face");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -92,6 +108,25 @@ export default function AssessmentPage() {
   const [studentExplanation, setStudentExplanation] = useState<string | null>(
     null
   );
+
+  // Teaching assessment state
+  const [teachingTranscript, setTeachingTranscript] = useState("");
+  const [isTeachingComplete, setIsTeachingComplete] = useState(false);
+  const [teachingAnalysis, setTeachingAnalysis] = useState<{
+    teachingQuality: number;
+    keyPointsCovered: string[];
+    missingConcepts: string[];
+    explanationClarity: number;
+    confidenceLevel: number;
+  } | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Learning capability state
+  const [learningCapability, setLearningCapability] = useState<number | null>(
+    null
+  );
+  const [assessmentResult, setAssessmentResult] =
+    useState<AssessmentResult | null>(null);
 
   // Handle user messages with hardcoded responses
   const [userMessage, setUserMessage] = useState("");
@@ -146,71 +181,70 @@ export default function AssessmentPage() {
   };
 
   // Sample questions based on the topic
-const questions: Question[] = [
-  {
-    id: "1",
-    question: `What is the main principle behind hydrocarbons?`,
-    options: [
-      "Conservation of energy",
-      "Bonding of carbon and hydrogen atoms",
-      "Formation of ionic bonds",
-      "Oxidation-reduction reactions",
-    ],
-    correctAnswer: "1",
-    type: "mcq",
-    explanation:
-      "Hydrocarbons are organic compounds made up of only carbon and hydrogen atoms, primarily bonded in covalent bonds.",
-  },
-  {
-    id: "2",
-    question: `Explain in your own words how hydrocarbons are important in everyday life.`,
-    type: "voice",
-    explanation:
-      "This question tests your ability to connect the importance of hydrocarbons to real-world applications. Strong answers include fuels, plastics, and organic chemicals.",
-  },
-  {
-    id: "3",
-    question: `Which of the following is NOT a type of hydrocarbon?`,
-    options: ["Alkanes", "Alkenes", "Alkynes", "Proteins"],
-    correctAnswer: "3",
-    type: "mcq",
-    explanation:
-      "Proteins are biological macromolecules made of amino acids, while alkanes, alkenes, and alkynes are all types of hydrocarbons.",
-  },
-  {
-    id: "4",
-    question: `What is the simplest form of hydrocarbon?`,
-    options: ["Methane", "Ethanol", "Propane", "Butane"],
-    correctAnswer: "0",
-    type: "mcq",
-    explanation:
-      "Methane (CH₄) is the simplest hydrocarbon, consisting of a single carbon atom bonded to four hydrogen atoms.",
-  },
-  {
-    id: "5",
-    question: `Describe how the structure of hydrocarbons affects their physical properties.`,
-    type: "voice",
-    explanation:
-      "This question assesses your understanding of how the structure, like chain length and bonding, impacts melting points, boiling points, and solubility.",
-  },
-  {
-    id: "6",
-    question: `Which of the following hydrocarbons is used as a major fuel source?`,
-    options: ["Methane", "Ethanol", "Glucose", "Caffeine"],
-    correctAnswer: "0",
-    type: "mcq",
-    explanation:
-      "Methane is a primary component of natural gas and is widely used as a fuel for heating and electricity generation.",
-  },
-  {
-    id: "7",
-    question: `Explain the difference between saturated and unsaturated hydrocarbons.`,
-    type: "voice",
-    explanation:
-      "This question tests your knowledge of hydrocarbon classifications. A saturated hydrocarbon has only single bonds between carbon atoms, while unsaturated hydrocarbons have one or more double or triple bonds.",
-  },
-];
-
+  const questions: Question[] = [
+    {
+      id: "1",
+      question: `What is the main principle behind hydrocarbons?`,
+      options: [
+        "Conservation of energy",
+        "Bonding of carbon and hydrogen atoms",
+        "Formation of ionic bonds",
+        "Oxidation-reduction reactions",
+      ],
+      correctAnswer: "1",
+      type: "mcq",
+      explanation:
+        "Hydrocarbons are organic compounds made up of only carbon and hydrogen atoms, primarily bonded in covalent bonds.",
+    },
+    {
+      id: "2",
+      question: `Explain in your own words how hydrocarbons are important in everyday life.`,
+      type: "voice",
+      explanation:
+        "This question tests your ability to connect the importance of hydrocarbons to real-world applications. Strong answers include fuels, plastics, and organic chemicals.",
+    },
+    {
+      id: "3",
+      question: `Which of the following is NOT a type of hydrocarbon?`,
+      options: ["Alkanes", "Alkenes", "Alkynes", "Proteins"],
+      correctAnswer: "3",
+      type: "mcq",
+      explanation:
+        "Proteins are biological macromolecules made of amino acids, while alkanes, alkenes, and alkynes are all types of hydrocarbons.",
+    },
+    {
+      id: "4",
+      question: `What is the simplest form of hydrocarbon?`,
+      options: ["Methane", "Ethanol", "Propane", "Butane"],
+      correctAnswer: "0",
+      type: "mcq",
+      explanation:
+        "Methane (CH₄) is the simplest hydrocarbon, consisting of a single carbon atom bonded to four hydrogen atoms.",
+    },
+    {
+      id: "5",
+      question: `Describe how the structure of hydrocarbons affects their physical properties.`,
+      type: "voice",
+      explanation:
+        "This question assesses your understanding of how the structure, like chain length and bonding, impacts melting points, boiling points, and solubility.",
+    },
+    {
+      id: "6",
+      question: `Which of the following hydrocarbons is used as a major fuel source?`,
+      options: ["Methane", "Ethanol", "Glucose", "Caffeine"],
+      correctAnswer: "0",
+      type: "mcq",
+      explanation:
+        "Methane is a primary component of natural gas and is widely used as a fuel for heating and electricity generation.",
+    },
+    {
+      id: "7",
+      question: `Explain the difference between saturated and unsaturated hydrocarbons.`,
+      type: "voice",
+      explanation:
+        "This question tests your knowledge of hydrocarbon classifications. A saturated hydrocarbon has only single bonds between carbon atoms, while unsaturated hydrocarbons have one or more double or triple bonds.",
+    },
+  ];
 
   // Sample educational games
   const games: Game[] = [
@@ -270,6 +304,21 @@ const questions: Question[] = [
       .padStart(2, "0")}`;
   };
 
+  // Fetch student data on component mount
+  useEffect(() => {
+    if (user?.id) {
+      fetchStudentData(user.id)
+        .then((data) => {
+          setLearningCapability(data.learningCapability);
+        })
+        .catch((error) => {
+          console.error("Error fetching student data:", error);
+          // Set a default learning capability if fetch fails
+          setLearningCapability(0.7);
+        });
+    }
+  }, [user?.id]);
+
   // Start the video call
   const startCall = () => {
     setIsCallActive(true);
@@ -282,26 +331,26 @@ const questions: Question[] = [
     setCallTimer(timer);
 
     // Access user's webcam
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices
-          .getUserMedia({ video: true })
-          .then((stream) => {
-            if (studentVideoRef.current) {
-              studentVideoRef.current.srcObject = stream;
-              studentVideoRef.current.play();
-            }
-            setIsVideoOn(true);
-          })
-          .catch((err) => {
-            console.error("Error accessing webcam:", err);
-          });
-      } else {
-        // Fallback for browsers that don't support getUserMedia
-        if (studentVideoRef.current) {
-          studentVideoRef.current.poster =
-            "/placeholder.svg?height=240&width=320";
-        }
+    if (navigator.mediaDevices?.getUserMedia) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          if (studentVideoRef.current) {
+            studentVideoRef.current.srcObject = stream;
+            studentVideoRef.current.play();
+          }
+          setIsVideoOn(true);
+        })
+        .catch((err) => {
+          console.error("Error accessing webcam:", err);
+        });
+    } else {
+      // Fallback for browsers that don't support getUserMedia
+      if (studentVideoRef.current) {
+        studentVideoRef.current.poster =
+          "/placeholder.svg?height=240&width=320";
       }
+    }
 
     // Simulate AI starting to listen
     setIsAiThinking(true);
@@ -360,6 +409,47 @@ const questions: Question[] = [
     setIsVideoOn(!isVideoOn);
   };
 
+  // Proceed to teaching assessment after face-to-face
+  const proceedToTeaching = () => {
+    setAssessmentPhase("teaching");
+  };
+
+  // Handle teaching transcript submission
+  const handleSubmitTeaching = async () => {
+    if (!teachingTranscript.trim()) {
+      toast({
+        title: "Teaching transcript required",
+        description: "Please provide your explanation of the topic.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+
+    try {
+      // Analyze the teaching transcript
+      const analysis = await analyzeTeaching(
+        teachingTranscript,
+        subject as string,
+        formattedSubtopic
+      );
+
+      setTeachingAnalysis(analysis);
+      setIsTeachingComplete(true);
+      setIsAnalyzing(false);
+    } catch (error) {
+      console.error("Error analyzing teaching:", error);
+      toast({
+        title: "Analysis Failed",
+        description:
+          "There was an error analyzing your teaching. Please try again.",
+        variant: "destructive",
+      });
+      setIsAnalyzing(false);
+    }
+  };
+
   // Proceed to questions after face-to-face
   const proceedToQuestions = () => {
     setAssessmentPhase("questions");
@@ -404,13 +494,46 @@ const questions: Question[] = [
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
         setIsSubmitting(true);
-        // Simulate submission delay
-        setTimeout(() => {
-          setIsSubmitting(false);
-          calculateResults();
-          setAssessmentPhase("results");
-        }, 1500);
+        // Submit assessment and get results
+        submitAssessmentResults();
       }
+    }
+  };
+
+  const submitAssessmentResults = async () => {
+    try {
+      // Calculate teaching quality from analysis
+      const teachingQuality = teachingAnalysis?.teachingQuality || 70;
+
+      // Submit assessment to API
+      const result = await submitAssessment(
+        user?.id || "guest",
+        subject as string,
+        formattedTopic,
+        answers,
+        teachingQuality
+      );
+
+      setAssessmentResult(result);
+      setScore(result.score);
+      setFeedback(result.feedback);
+      setLearningCapability(result.learningCapability);
+
+      setIsSubmitting(false);
+      setAssessmentPhase("results");
+    } catch (error) {
+      console.error("Error submitting assessment:", error);
+      toast({
+        title: "Submission Failed",
+        description:
+          "There was an error submitting your assessment. Please try again.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+
+      // Fallback to local calculation if API fails
+      calculateResults();
+      setAssessmentPhase("results");
     }
   };
 
@@ -479,6 +602,19 @@ const questions: Question[] = [
 
   // Progress calculation for questions phase
   const progress = (currentQuestionIndex / questions.length) * 100;
+
+  // Get learning capability description
+  const getLearningCapabilityDescription = (capability: number) => {
+    if (capability >= 0.85) {
+      return "Excellent - You have a strong ability to grasp new concepts quickly.";
+    } else if (capability >= 0.7) {
+      return "Good - You learn new concepts well with some practice.";
+    } else if (capability >= 0.5) {
+      return "Average - You can learn new concepts with consistent effort.";
+    } else {
+      return "Developing - You may benefit from more structured and simplified learning approaches.";
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -761,6 +897,189 @@ const questions: Question[] = [
         </div>
       )}
 
+      {assessmentPhase === "teaching" && (
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Avatar className="mr-2 bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                <AvatarFallback>MB</AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-xl font-bold">Teaching Assessment</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Teach Model B about {formattedSubtopic} to demonstrate your
+                  understanding
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {!isTeachingComplete ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <BookOpen className="h-5 w-5 mr-2 text-blue-600" />
+                  Teach the Concept
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                  <div className="flex items-start">
+                    <Lightbulb className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-2 shrink-0" />
+                    <div>
+                      <p className="text-blue-700 dark:text-blue-300">
+                        One of the best ways to demonstrate understanding is to
+                        teach a concept to someone else. Explain{" "}
+                        {formattedSubtopic} as if you were teaching it to a
+                        student who is unfamiliar with the topic.
+                      </p>
+                      <ul className="mt-2 text-sm text-blue-700 dark:text-blue-300 list-disc pl-5 space-y-1">
+                        <li>Define key terms and concepts</li>
+                        <li>Explain the underlying principles</li>
+                        <li>Provide examples or applications</li>
+                        <li>Connect it to related concepts</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <Textarea
+                  placeholder={`Start your explanation of ${formattedSubtopic} here...`}
+                  className="min-h-[250px]"
+                  value={teachingTranscript}
+                  onChange={(e) => setTeachingTranscript(e.target.value)}
+                />
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button
+                  onClick={handleSubmitTeaching}
+                  disabled={isAnalyzing || !teachingTranscript.trim()}
+                >
+                  {isAnalyzing ? (
+                    <div className="flex items-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Analyzing...
+                    </div>
+                  ) : (
+                    "Submit Teaching"
+                  )}
+                </Button>
+              </CardFooter>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Sparkles className="h-5 w-5 mr-2 text-blue-600" />
+                    Teaching Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="font-medium">Teaching Quality</p>
+                      <div className="flex items-center">
+                        <Progress
+                          value={teachingAnalysis?.teachingQuality || 0}
+                          className="h-2 flex-1 mr-2"
+                        />
+                        <span className="text-sm font-medium">
+                          {teachingAnalysis?.teachingQuality || 0}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-medium">Explanation Clarity</p>
+                      <div className="flex items-center">
+                        <Progress
+                          value={teachingAnalysis?.explanationClarity || 0}
+                          className="h-2 flex-1 mr-2"
+                        />
+                        <span className="text-sm font-medium">
+                          {teachingAnalysis?.explanationClarity || 0}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="font-medium mb-2">Key Points Covered</h3>
+                      <ul className="space-y-1 text-sm">
+                        {teachingAnalysis?.keyPointsCovered.map(
+                          (point, index) => (
+                            <li key={index} className="flex items-start">
+                              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 mr-2 shrink-0" />
+                              <span className="capitalize">{point}</span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 className="font-medium mb-2">Missing Concepts</h3>
+                      <ul className="space-y-1 text-sm">
+                        {teachingAnalysis?.missingConcepts.map(
+                          (concept, index) => (
+                            <li key={index} className="flex items-start">
+                              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 mr-2 shrink-0" />
+                              <span className="capitalize">{concept}</span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <div className="flex items-start">
+                      <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-2 shrink-0" />
+                      <div>
+                        <h3 className="font-medium text-blue-800 dark:text-blue-300">
+                          Model B's Feedback
+                        </h3>
+                        <p className="mt-1 text-blue-700 dark:text-blue-300">
+                          {teachingAnalysis?.teachingQuality >= 85
+                            ? `Your explanation of ${formattedSubtopic} was excellent. You covered most of the key concepts clearly and provided good examples. Your teaching demonstrates a strong understanding of the topic.`
+                            : teachingAnalysis?.teachingQuality >= 65
+                            ? `Your explanation of ${formattedSubtopic} was good. You covered several important concepts, though some key points were missed. With a bit more detail and clarity, your teaching would be excellent.`
+                            : `Your explanation of ${formattedSubtopic} shows some understanding, but several key concepts were missing. Try to be more comprehensive and provide clearer examples in your explanations.`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button onClick={proceedToQuestions}>
+                    Continue to Questions
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          )}
+        </div>
+      )}
+
       {assessmentPhase === "questions" && (
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-6">
@@ -769,7 +1088,9 @@ const questions: Question[] = [
                 <AvatarFallback>MB</AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-xl font-bold">Model B Follow-Up Questions</h1>
+                <h1 className="text-xl font-bold">
+                  Model B Follow-Up Questions
+                </h1>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Help me know more about {formattedSubtopic}
                 </p>
@@ -887,7 +1208,7 @@ const questions: Question[] = [
           <Card>
             <CardHeader className="text-center">
               <Trophy className="h-16 w-16 mx-auto text-yellow-500 mb-2" />
-              <CardTitle className="text-2xl">Interaction Complete!</CardTitle>
+              <CardTitle className="text-2xl">Assessment Complete!</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
@@ -898,15 +1219,81 @@ const questions: Question[] = [
                 </p>
               </div>
 
-              <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                <div className="flex items-start">
-                  <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-2" />
-                  <div>
-                    <h3 className="font-semibold text-blue-800 dark:text-blue-300">
-                      Model B Feedback
-                    </h3>
-                    <p className="text-blue-700 dark:text-blue-300 mt-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Learning Capability</h3>
+                  <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Score:</span>
+                        <span>{(learningCapability || 0).toFixed(2)}</span>
+                      </div>
+                      <Progress
+                        value={(learningCapability || 0) * 100}
+                        className="h-2"
+                      />
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        {getLearningCapabilityDescription(
+                          learningCapability || 0
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Model B Feedback</h3>
+                  <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <p className="text-blue-700 dark:text-blue-300">
                       {feedback}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {assessmentResult && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Strengths</h3>
+                    <ul className="space-y-1">
+                      {assessmentResult.strengths.map((strength, index) => (
+                        <li key={index} className="flex items-start">
+                          <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 mr-2 shrink-0" />
+                          <span>{strength}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">
+                      Areas for Improvement
+                    </h3>
+                    <ul className="space-y-1">
+                      {assessmentResult.weaknesses.map((weakness, index) => (
+                        <li key={index} className="flex items-start">
+                          <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 mr-2 shrink-0" />
+                          <span>{weakness}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                <div className="flex items-start">
+                  <Lightbulb className="h-5 w-5 text-purple-600 dark:text-purple-400 mt-0.5 mr-2 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-purple-800 dark:text-purple-300">
+                      Recommended Learning Approach
+                    </h3>
+                    <p className="mt-1 text-purple-700 dark:text-purple-300">
+                      {assessmentResult?.recommendedApproach ||
+                        (learningCapability && learningCapability >= 0.8
+                          ? "Based on your learning capability, you would benefit from advanced, self-directed learning with complex problem-solving exercises."
+                          : learningCapability && learningCapability >= 0.6
+                          ? "Your learning style suggests you would benefit from a mix of visual aids, practical examples, and guided practice."
+                          : "You may benefit from a more structured approach with simplified explanations, visual aids, and frequent review of fundamental concepts.")}
                     </p>
                   </div>
                 </div>

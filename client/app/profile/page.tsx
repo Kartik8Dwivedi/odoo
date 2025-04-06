@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Trophy,
   Star,
@@ -22,58 +28,71 @@ import {
   Github,
   Twitter,
   Linkedin,
-} from "lucide-react"
+} from "lucide-react";
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Sample data for the heatmap
-  const currentYear = new Date().getFullYear()
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const currentYear = new Date().getFullYear();
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   // Generate random activity data for the heatmap
   const generateHeatmapData = () => {
-    const data = []
+    const data = [];
     for (let month = 0; month < 12; month++) {
-      const daysInMonth = new Date(currentYear, month + 1, 0).getDate()
-      const monthData = []
+      const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
+      const monthData = [];
 
       for (let day = 1; day <= daysInMonth; day++) {
         // Random activity level: 0 (none), 1 (low), 2 (medium), 3 (high), 4 (very high)
-        const activityLevel = Math.floor(Math.random() * 5)
+        const activityLevel = Math.floor(Math.random() * 5);
         monthData.push({
           day,
           level: activityLevel,
-        })
+        });
       }
 
       data.push({
         month: months[month],
         days: monthData,
-      })
+      });
     }
-    return data
-  }
+    return data;
+  };
 
-  const heatmapData = generateHeatmapData()
+  const heatmapData = generateHeatmapData();
 
   // Get activity level class based on the level
   const getActivityClass = (level: number) => {
     switch (level) {
       case 0:
-        return "bg-gray-100 dark:bg-gray-800"
+        return "bg-gray-100 dark:bg-gray-800";
       case 1:
-        return "bg-green-100 dark:bg-green-900/30"
+        return "bg-green-100 dark:bg-green-900/30";
       case 2:
-        return "bg-green-300 dark:bg-green-800/50"
+        return "bg-green-300 dark:bg-green-800/50";
       case 3:
-        return "bg-green-500 dark:bg-green-700"
+        return "bg-green-500 dark:bg-green-700";
       case 4:
-        return "bg-green-700 dark:bg-green-500"
+        return "bg-green-700 dark:bg-green-500";
       default:
-        return "bg-gray-100 dark:bg-gray-800"
+        return "bg-gray-100 dark:bg-gray-800";
     }
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -84,16 +103,23 @@ export default function ProfilePage() {
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
                 <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Aaryan Tripathi" />
+                  <AvatarImage
+                    src="/placeholder.svg?height=96&width=96"
+                    alt="Aaryan Tripathi"
+                  />
                   <AvatarFallback className="text-2xl">AT</AvatarFallback>
                 </Avatar>
                 <h2 className="text-2xl font-bold">Aaryan Tripathi</h2>
-                <p className="text-gray-500 dark:text-gray-400">Physics Enthusiast</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Physics Enthusiast
+                </p>
 
                 <div className="flex items-center mt-2 space-x-1">
                   <Flame className="h-5 w-5 text-orange-500" />
                   <span className="font-bold">12</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">day streak</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    day streak
+                  </span>
                 </div>
 
                 <div className="mt-4 flex space-x-2">
@@ -109,24 +135,32 @@ export default function ProfilePage() {
 
               <div className="mt-6 space-y-4">
                 <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Rank</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Rank
+                  </div>
                   <div className="font-medium">
                     <Badge className="bg-purple-600">Top 5%</Badge>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Joined</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Joined
+                  </div>
                   <div className="font-medium">March 2023</div>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Subjects</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Subjects
+                  </div>
                   <div className="font-medium">4</div>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Competitions</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Competitions
+                  </div>
                   <div className="font-medium">12</div>
                 </div>
               </div>
@@ -134,13 +168,25 @@ export default function ProfilePage() {
               <div className="mt-6 pt-6 border-t">
                 <h3 className="font-medium mb-3">Connect</h3>
                 <div className="flex space-x-3">
-                  <Button variant="outline" size="icon" className="rounded-full">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                  >
                     <Github className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                  >
                     <Twitter className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" className="rounded-full">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                  >
                     <Linkedin className="h-4 w-4" />
                   </Button>
                 </div>
@@ -224,7 +270,9 @@ export default function ProfilePage() {
                   <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-3 mb-1">
                     <Award className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                   </div>
-                  <span className="text-xs text-center text-gray-400">Locked</span>
+                  <span className="text-xs text-center text-gray-400">
+                    Locked
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -233,7 +281,11 @@ export default function ProfilePage() {
 
         {/* Main Content */}
         <div className="md:w-2/3 lg:w-3/4 space-y-6">
-          <Tabs defaultValue="overview" className="space-y-6" onValueChange={setActiveTab}>
+          <Tabs
+            defaultValue="overview"
+            className="space-y-6"
+            onValueChange={setActiveTab}
+          >
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="achievements">Achievements</TabsTrigger>
@@ -248,7 +300,9 @@ export default function ProfilePage() {
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Lessons Completed</p>
+                        <p className="text-sm font-medium text-gray-500">
+                          Lessons Completed
+                        </p>
                         <p className="text-3xl font-bold">24</p>
                       </div>
                       <div className="rounded-full bg-purple-100 dark:bg-purple-900/50 p-3">
@@ -262,7 +316,9 @@ export default function ProfilePage() {
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Competitions Won</p>
+                        <p className="text-sm font-medium text-gray-500">
+                          Competitions Won
+                        </p>
                         <p className="text-3xl font-bold">7</p>
                       </div>
                       <div className="rounded-full bg-blue-100 dark:bg-blue-900/50 p-3">
@@ -276,7 +332,9 @@ export default function ProfilePage() {
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Credits Earned</p>
+                        <p className="text-sm font-medium text-gray-500">
+                          Credits Earned
+                        </p>
                         <p className="text-3xl font-bold">350</p>
                       </div>
                       <div className="rounded-full bg-green-100 dark:bg-green-900/50 p-3">
@@ -290,7 +348,9 @@ export default function ProfilePage() {
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Learning Streak</p>
+                        <p className="text-sm font-medium text-gray-500">
+                          Learning Streak
+                        </p>
                         <p className="text-3xl font-bold">12 days</p>
                       </div>
                       <div className="rounded-full bg-orange-100 dark:bg-orange-900/50 p-3">
@@ -305,14 +365,19 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Learning Activity</CardTitle>
-                  <CardDescription>Your learning journey throughout {currentYear}</CardDescription>
+                  <CardDescription>
+                    Your learning journey throughout {currentYear}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
                     <div className="min-w-[900px]">
                       <div className="flex mb-2">
                         {months.map((month) => (
-                          <div key={month} className="flex-1 text-center text-xs text-gray-500">
+                          <div
+                            key={month}
+                            className="flex-1 text-center text-xs text-gray-500"
+                          >
                             {month}
                           </div>
                         ))}
@@ -322,13 +387,18 @@ export default function ProfilePage() {
                         {Array.from({ length: 7 }).map((_, dayOfWeek) => (
                           <div key={dayOfWeek} className="flex">
                             {heatmapData.map((month, monthIndex) => (
-                              <div key={`${month.month}-${dayOfWeek}`} className="flex-1 flex gap-1 justify-center">
+                              <div
+                                key={`${month.month}-${dayOfWeek}`}
+                                className="flex-1 flex gap-1 justify-center"
+                              >
                                 {month.days
                                   .filter((_, index) => index % 7 === dayOfWeek)
                                   .map((day, index) => (
                                     <div
                                       key={`${month.month}-${day.day}-${index}`}
-                                      className={`w-3 h-3 rounded-sm ${getActivityClass(day.level)}`}
+                                      className={`w-3 h-3 rounded-sm ${getActivityClass(
+                                        day.level
+                                      )}`}
                                       title={`${month.month} ${day.day}: ${day.level} activities`}
                                     />
                                   ))}
@@ -356,7 +426,9 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Subject Mastery</CardTitle>
-                  <CardDescription>Your proficiency level in each subject</CardDescription>
+                  <CardDescription>
+                    Your proficiency level in each subject
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
@@ -411,7 +483,9 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Recent Activity</CardTitle>
-                  <CardDescription>Your latest learning activities</CardDescription>
+                  <CardDescription>
+                    Your latest learning activities
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -420,7 +494,9 @@ export default function ProfilePage() {
                         <BookOpen className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                       </div>
                       <div>
-                        <p className="font-medium">Completed Ray Optics Lesson</p>
+                        <p className="font-medium">
+                          Completed Electrostatics Lesson
+                        </p>
                         <p className="text-sm text-gray-500">2 hours ago</p>
                       </div>
                     </div>
@@ -429,7 +505,9 @@ export default function ProfilePage() {
                         <Trophy className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
-                        <p className="font-medium">Won Physics Quiz Competition</p>
+                        <p className="font-medium">
+                          Won Physics Quiz Competition
+                        </p>
                         <p className="text-sm text-gray-500">Yesterday</p>
                       </div>
                     </div>
@@ -447,7 +525,9 @@ export default function ProfilePage() {
                         <Users className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                       </div>
                       <div>
-                        <p className="font-medium">Joined Physics Study Group</p>
+                        <p className="font-medium">
+                          Joined Physics Study Group
+                        </p>
                         <p className="text-sm text-gray-500">3 days ago</p>
                       </div>
                     </div>
@@ -470,8 +550,12 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="font-medium">Physics Master</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Completed all optics modules</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Earned 2 weeks ago</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Completed all coulombs-law modules
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Earned 2 weeks ago
+                        </p>
                       </div>
                     </div>
 
@@ -481,8 +565,12 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="font-medium">Quiz Champion</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Won 5 competitions in a row</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Earned 1 month ago</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Won 5 competitions in a row
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Earned 1 month ago
+                        </p>
                       </div>
                     </div>
 
@@ -492,8 +580,12 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="font-medium">Consistent Learner</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">10-day learning streak</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Earned 2 days ago</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          10-day learning streak
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Earned 2 days ago
+                        </p>
                       </div>
                     </div>
 
@@ -503,8 +595,12 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="font-medium">Problem Solver</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Solved 50 complex problems</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Earned 3 weeks ago</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Solved 50 complex problems
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Earned 3 weeks ago
+                        </p>
                       </div>
                     </div>
 
@@ -514,8 +610,12 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="font-medium">Top Student</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Ranked in the top 5% of all students</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Earned 2 months ago</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Ranked in the top 5% of all students
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Earned 2 months ago
+                        </p>
                       </div>
                     </div>
 
@@ -524,9 +624,15 @@ export default function ProfilePage() {
                         <Award className="h-6 w-6 text-gray-400 dark:text-gray-500" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-400 dark:text-gray-500">Science Expert</p>
-                        <p className="text-sm text-gray-400 dark:text-gray-500">Complete all science modules</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Locked</p>
+                        <p className="font-medium text-gray-400 dark:text-gray-500">
+                          Science Expert
+                        </p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500">
+                          Complete all science modules
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Locked
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -538,14 +644,19 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Learning Activity</CardTitle>
-                  <CardDescription>Your learning journey throughout {currentYear}</CardDescription>
+                  <CardDescription>
+                    Your learning journey throughout {currentYear}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
                     <div className="min-w-[900px]">
                       <div className="flex mb-2">
                         {months.map((month) => (
-                          <div key={month} className="flex-1 text-center text-xs text-gray-500">
+                          <div
+                            key={month}
+                            className="flex-1 text-center text-xs text-gray-500"
+                          >
                             {month}
                           </div>
                         ))}
@@ -555,13 +666,18 @@ export default function ProfilePage() {
                         {Array.from({ length: 7 }).map((_, dayOfWeek) => (
                           <div key={dayOfWeek} className="flex">
                             {heatmapData.map((month, monthIndex) => (
-                              <div key={`${month.month}-${dayOfWeek}`} className="flex-1 flex gap-1 justify-center">
+                              <div
+                                key={`${month.month}-${dayOfWeek}`}
+                                className="flex-1 flex gap-1 justify-center"
+                              >
                                 {month.days
                                   .filter((_, index) => index % 7 === dayOfWeek)
                                   .map((day, index) => (
                                     <div
                                       key={`${month.month}-${day.day}-${index}`}
-                                      className={`w-3 h-3 rounded-sm ${getActivityClass(day.level)}`}
+                                      className={`w-3 h-3 rounded-sm ${getActivityClass(
+                                        day.level
+                                      )}`}
                                       title={`${month.month} ${day.day}: ${day.level} activities`}
                                     />
                                   ))}
@@ -588,7 +704,9 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Activity Timeline</CardTitle>
-                  <CardDescription>Your recent learning activities</CardDescription>
+                  <CardDescription>
+                    Your recent learning activities
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="relative pl-6 border-l space-y-6">
@@ -597,9 +715,14 @@ export default function ProfilePage() {
                         <BookOpen className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                       </div>
                       <div>
-                        <p className="font-medium">Completed Ray Optics Lesson</p>
+                        <p className="font-medium">
+                          Completed Electrostatics Lesson
+                        </p>
                         <p className="text-sm text-gray-500">2 hours ago</p>
-                        <p className="text-sm mt-1">Finished the lesson with a score of 92% on the assessment.</p>
+                        <p className="text-sm mt-1">
+                          Finished the lesson with a score of 92% on the
+                          assessment.
+                        </p>
                       </div>
                     </div>
 
@@ -608,10 +731,13 @@ export default function ProfilePage() {
                         <Trophy className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
-                        <p className="font-medium">Won Physics Quiz Competition</p>
+                        <p className="font-medium">
+                          Won Physics Quiz Competition
+                        </p>
                         <p className="text-sm text-gray-500">Yesterday</p>
                         <p className="text-sm mt-1">
-                          Ranked 1st among 24 participants in the weekly physics challenge.
+                          Ranked 1st among 24 participants in the weekly physics
+                          challenge.
                         </p>
                       </div>
                     </div>
@@ -623,7 +749,10 @@ export default function ProfilePage() {
                       <div>
                         <p className="font-medium">Earned 50 Credits</p>
                         <p className="text-sm text-gray-500">2 days ago</p>
-                        <p className="text-sm mt-1">Received credits for helping 5 other students with their doubts.</p>
+                        <p className="text-sm mt-1">
+                          Received credits for helping 5 other students with
+                          their doubts.
+                        </p>
                       </div>
                     </div>
 
@@ -632,10 +761,13 @@ export default function ProfilePage() {
                         <Users className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                       </div>
                       <div>
-                        <p className="font-medium">Joined Physics Study Group</p>
+                        <p className="font-medium">
+                          Joined Physics Study Group
+                        </p>
                         <p className="text-sm text-gray-500">3 days ago</p>
                         <p className="text-sm mt-1">
-                          Joined a group of 12 students focusing on advanced physics concepts.
+                          Joined a group of 12 students focusing on advanced
+                          physics concepts.
                         </p>
                       </div>
                     </div>
@@ -648,14 +780,18 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Competition History</CardTitle>
-                  <CardDescription>Your performance in academic competitions</CardDescription>
+                  <CardDescription>
+                    Your performance in academic competitions
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-medium">Physics Weekly Challenge</h3>
+                          <h3 className="font-medium">
+                            Physics Weekly Challenge
+                          </h3>
                           <p className="text-sm text-gray-500">Yesterday</p>
                         </div>
                         <Badge className="bg-green-500">1st Place</Badge>
@@ -726,15 +862,21 @@ export default function ProfilePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Upcoming Competitions</CardTitle>
-                  <CardDescription>Competitions you can participate in</CardDescription>
+                  <CardDescription>
+                    Competitions you can participate in
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-medium">Advanced Physics Challenge</h3>
-                          <p className="text-sm text-gray-500">Tomorrow, 10:00 AM</p>
+                          <h3 className="font-medium">
+                            Advanced Physics Challenge
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            Tomorrow, 10:00 AM
+                          </p>
                         </div>
                         <Badge
                           variant="outline"
@@ -759,7 +901,9 @@ export default function ProfilePage() {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-medium">Mathematics Marathon</h3>
-                          <p className="text-sm text-gray-500">Next week, 2:00 PM</p>
+                          <p className="text-sm text-gray-500">
+                            Next week, 2:00 PM
+                          </p>
                         </div>
                         <Button size="sm" variant="outline">
                           Register
@@ -781,6 +925,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

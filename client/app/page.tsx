@@ -10,10 +10,11 @@ export default function Home() {
       <section className="relative z-10 pt-20">
         <div className="container mx-auto px-4 text-black">
           <div className="max-w-3xl pl-5">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              <span className="text-indigo-600">Ascend AI</span>: Learn by Teaching AI
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 dark:text-white">
+              <span className="text-indigo-600 ">Ascend AI</span>: Learn by
+              Teaching AI
             </h1>
-            <p className="text-xl md:text-2xl mb-8">
+            <p className="text-xl md:text-2xl mb-8 dark:text-white">
               An AI-powered virtual classroom that personalizes learning, boosts
               engagement, and makes education accessible to all.
             </p>
