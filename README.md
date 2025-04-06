@@ -5,6 +5,11 @@ An intelligent learning system that adapts to each student's pace and learning s
 
 ---
 
+## Presentation Video 
+- [Link to Video](https://drive.google.com/file/d/1kNVVNWmuF5FNsfqx-2xRNdrZ6lRTTeGR/view?usp=sharing)
+
+---
+
 ## 🚀 Features
 
 - 🎯 **Personalized Learning**: Students learn at their own pace with tailored content.
@@ -51,4 +56,5 @@ An intelligent learning system that adapts to each student's pace and learning s
 
 ![image](./public/img01.png)
 ![image](./public/img02.png)
+
 
